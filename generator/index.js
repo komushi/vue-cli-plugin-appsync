@@ -6,6 +6,7 @@
 module.exports = (api, options, rootOptions) => {
   const pkg = {
     dependencies: {
+      'aws-appsync': '^1.0.20',
       'graphql': '^0.13.2',
       'vue-apollo': '^3.0.0-beta.10',
     },
@@ -36,7 +37,7 @@ module.exports = (api, options, rootOptions) => {
 
       // Inject import
       const lastImportIndex = lines.findIndex(line => line.match(/^import/))
-      lines[lastImportIndex] += `\nimport { appSyncProvider } from './graphql/vue-appsync'`
+      lines[lastImportIndex] += `\nimport { appSyncProvider } from './graphql/config/vue-appsync'`
 
       // Modify app
       const appIndex = lines.findIndex(line => line.match(/new Vue/))
@@ -66,7 +67,7 @@ module.exports = (api, options, rootOptions) => {
 
       // Inject component reference
       const vueLastRefCompIndex = vueLines.findIndex(line => line.match('components: {'))
-      vueLines[vueLastRefCompIndex] += `\nAppSyncExample`
+      vueLines[vueLastRefCompIndex] += `\n\t\tAppSyncExample,`
 
       vueContent = vueLines.reverse().join('\n')
       fs.writeFileSync(vuePath, vueContent, { encoding: 'utf8' })
