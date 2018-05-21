@@ -1,5 +1,5 @@
 <template>
-  <div class="apollo-example">
+  <div class="app-sync-example">
 
     <!-- Book example -->
     <ApolloQuery
@@ -12,13 +12,20 @@
 
       <div slot-scope="{ result: { data } }">
         <template v-if="data">
-          <div
-            v-for="book of data.getAllBooks"
-            :key="book.title"
-            class="message"
-          >
-            {{ book.title }}
-          </div>
+          <table style="width:100%">
+            <tr>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Gender</th>
+            </tr>
+            <tr v-for="book of data.getAllBooks"
+              :key="book.title"
+              class="book">
+              <td>{{ book.title }}</td>
+              <td>{{ book.author }}</td>
+              <td>{{ book.gender }}</td>
+            </tr>
+          </table>
         </template>
       </div>
     </ApolloQuery>
@@ -37,53 +44,53 @@
 <script>
 // import MESSAGE_ADD_MUTATION from '../graphql/MessageAdd.gql'
 
-export default {
-  data () {
-    return {
-      name: 'Anne',
-      newMessage: '',
-    }
-  },
+// export default {
+//   data () {
+//     return {
+//       name: 'Anne',
+//       newMessage: '',
+//     }
+//   },
 
-  computed: {
-    formValid () {
-      return this.newMessage
-    },
-  },
+//   computed: {
+//     formValid () {
+//       return this.newMessage
+//     },
+//   },
 
-  methods: {
-    sendMessage () {
-      if (this.formValid) {
-        this.$apollo.mutate({
-          mutation: MESSAGE_ADD_MUTATION,
-          variables: {
-            input: {
-              text: this.newMessage,
-            },
-          },
-        })
+//   methods: {
+//     sendMessage () {
+//       if (this.formValid) {
+//         this.$apollo.mutate({
+//           mutation: MESSAGE_ADD_MUTATION,
+//           variables: {
+//             input: {
+//               text: this.newMessage,
+//             },
+//           },
+//         })
 
-        this.newMessage = ''
-      }
-    },
+//         this.newMessage = ''
+//       }
+//     },
 
-    onMessageAdded (previousResult, { subscriptionData }) {
-      return {
-        messages: [
-          ...previousResult.messages,
-          subscriptionData.data.messageAdded,
-        ],
-      }
-    },
-  },
-}
+//     onMessageAdded (previousResult, { subscriptionData }) {
+//       return {
+//         messages: [
+//           ...previousResult.messages,
+//           subscriptionData.data.messageAdded,
+//         ],
+//       }
+//     },
+//   },
+// }
 </script>
 
 <style scoped>
 .form,
 .input,
 .apollo,
-.message {
+.book {
   padding: 12px;
 }
 

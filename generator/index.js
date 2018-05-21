@@ -62,10 +62,10 @@ module.exports = (api, options, rootOptions) => {
 
       // Inject component
       const vueLastComponentIndex = vueLines.findIndex(line => line.match(`<div id="app">`))
-      vueLines[vueLastComponentIndex] += `\n<app-sync-example></app-sync-example>`
+      vueLines[vueLastComponentIndex] += `\n\t\t<app-sync-example></app-sync-example>`
 
       // Inject component reference
-      const vueLastRefCompIndex = vueLines.findIndex(line => line.match('components: {/'))
+      const vueLastRefCompIndex = vueLines.findIndex(line => line.match('components: {'))
       vueLines[vueLastRefCompIndex] += `\nAppSyncExample`
 
       vueContent = vueLines.reverse().join('\n')
