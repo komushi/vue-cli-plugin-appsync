@@ -61,11 +61,11 @@ module.exports = (api, options, rootOptions) => {
       vueLines[vueLastImportIndex] += `\nimport AppSyncExample from './components/AppSyncExample.vue'`
 
       // Inject component
-      const vueLastComponentIndex = vueLines.findIndex(line => line.match(/^<div id="app">/))
+      const vueLastComponentIndex = vueLines.findIndex(line => line.match(`<div id="app">`)
       vueLines[vueLastComponentIndex] += `\n<app-sync-example></app-sync-example>`
 
       // Inject component reference
-      const vueLastRefCompIndex = vueLines.findIndex(line => line.match(/^components: {/))
+      const vueLastRefCompIndex = vueLines.findIndex(line => line.match("components: {/")
       vueLines[vueLastRefCompIndex] += `\nAppSyncExample`
 
       vueContent = vueLines.reverse().join('\n')
