@@ -1,6 +1,6 @@
 # vue-cli-plugin-appsync
 
-**:rocket: Start building a Vue app with AppSync and GraphQL in 1 minute!**
+**:rocket: Build a Vue app with AppSync and GraphQL in minutes!**
 
 This is a vue-cli 3.x plugin to add AppSync and GraphQL in your Vue project.
 
@@ -20,7 +20,7 @@ If you don't have a project created with vue-cli 3.x yet:
 vue create my-new-app
 ```
 
-### 1-3. App the appsync plugin
+### 1-3. Apply the AppSync plugin
 Navigate to the newly created project folder and add the cli plugin:
 
 ```
@@ -28,7 +28,7 @@ cd my-new-app
 vue add appsync
 ```
 
-*:information_source: An example `AppSyncExample.vue` component alongside some GraphQL query and setting files will be added into your sources.*
+**:information_source: An example `AppSyncExample.vue` component alongside some GraphQL query and setting files will be added into your sources. To make the example work you need to setup one AWS AppSync API as the GraphQL server-side API.**
 
 ### 1-4. Modify AppSync.js
 
@@ -44,13 +44,75 @@ export default {
 ```
 
 
-### 1-2. Start your app
+### 1-5. Start your app
 
 ```
 npm run serve
 ```
 
 ## 2. Plugin process
-### 2-1. Injected webpack-chain Rules
+**For people who want to know how the plugin works.**
+
+### 2-1. Injected webpack-chain Rules by vue-cli-service
 
 - `config.rule('gql')`
+
+### 2-2. Added files in generator template
+* AppSyncExample.js -> src/components/AppSyncExample.js
+* AppSync.js -> src/graphql/config/AppSync.js
+* vue-appsync.js -> src/graphql/config/vue-appsync.js
+* OnCreateBook.gql -> src/graphql/queries/OnCreateBook.gql
+* GetAllBooks.gql -> src/graphql/queries/GetAllBooks.gql
+
+### 2-3. Modified files by generator
+* src/main.js
+<pre>
+import Vue from 'vue'
+import App from './App.vue'
+<b>import { appSyncProvider } from './graphql/vue-appsync'</b>
+
+Vue.config.productionTip = false
+
+new Vue({
+    <b>provide: appSyncProvider.provide(),</b>
+    render: h => h(App)
+}).$mount('#app')
+</pre>
+
+* src/App.vue
+
+```html
+<template>
+  <div id="app">
+    <app-sync-example></app-sync-example>
+    <img src="./assets/logo.png">
+    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  </div>
+</template>
+```
+
+<pre><code>
+<script>
+import HelloWorld from './components/HelloWorld.vue'
+<b>import AppSyncExample from './components/AppSyncExample.vue'</script></b>
+
+export default {
+  name: 'app',
+  components: {
+    HelloWorld,
+    <b>ApolloExample</b>
+  }
+}
+</script>
+
+<style>
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+</style>
+</code></pre>

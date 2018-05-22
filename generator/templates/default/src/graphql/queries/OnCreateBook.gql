@@ -1,0 +1,7 @@
+subscription onCreateBook {
+  onCreateBook {
+    title
+    author
+    gender
+  }
+}

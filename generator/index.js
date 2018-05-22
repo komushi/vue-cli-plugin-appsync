@@ -1,8 +1,3 @@
-// const {
-//   hasYarn,
-// } = require('@vue/cli-shared-utils')
-// const chalk = require('chalk')
-
 module.exports = (api, options, rootOptions) => {
   const pkg = {
     dependencies: {
@@ -41,7 +36,7 @@ module.exports = (api, options, rootOptions) => {
 
       // Modify app
       const appIndex = lines.findIndex(line => line.match(/new Vue/))
-      lines[appIndex] += `\n  provide: appSyncProvider.provide(),`
+      lines[appIndex] += `\n\tprovide: appSyncProvider.provide(),`
 
       content = lines.reverse().join('\n')
       fs.writeFileSync(mainPath, content, { encoding: 'utf8' })
