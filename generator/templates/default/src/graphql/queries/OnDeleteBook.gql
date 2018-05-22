@@ -1,0 +1,7 @@
+subscription onDeleteBook {
+  onDeleteBook {
+    title
+    author
+    gender
+  }
+}

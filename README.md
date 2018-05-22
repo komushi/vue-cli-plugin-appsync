@@ -61,8 +61,12 @@ npm run serve
 * AppSyncExample.js -> src/components/AppSyncExample.js
 * AppSync.js -> src/graphql/config/AppSync.js
 * vue-appsync.js -> src/graphql/config/vue-appsync.js
-* OnCreateBook.gql -> src/graphql/queries/OnCreateBook.gql
 * GetAllBooks.gql -> src/graphql/queries/GetAllBooks.gql
+* CreateBook.gql -> src/graphql/queries/CreateBook.gql
+* DeleteBook.gql -> src/graphql/queries/DeleteBook.gql
+* OnCreateBook.gql -> src/graphql/queries/OnCreateBook.gql
+* OnDeleteBook.gql -> src/graphql/queries/OnDeleteBook.gql
+
 
 ### 2-3. Modified files by generator
 * src/main.js
