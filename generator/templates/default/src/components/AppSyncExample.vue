@@ -33,7 +33,7 @@
             <tr v-for="book of data.getAllBooks"
               :key="book.title"
               class="book">
-              <td><button v-on:click="deleteBook(book.title)">😫Remove</button></td>
+              <td><button v-on:click="deleteBook(book.title)">Remove</button></td>
               <td>{{ book.title }}</td>
               <td>{{ book.author }}</td>
               <td>{{ book.gender }}</td>
@@ -61,7 +61,7 @@
           </td>
         </tr>
       </table>
-      <button v-on:click="createBook">😄Add</button>
+      <button v-on:click="createBook">Add</button>
     </div>
 
 
