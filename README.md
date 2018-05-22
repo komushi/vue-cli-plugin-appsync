@@ -84,8 +84,7 @@ new Vue({
 </pre>
 
 * src/App.vue
-
-```html
+```
 <template>
   <div id="app">
     <app-sync-example></app-sync-example>
@@ -93,18 +92,16 @@ new Vue({
     <HelloWorld msg="Welcome to Your Vue.js App"/>
   </div>
 </template>
-```
 
-<pre><code>
 <script>
 import HelloWorld from './components/HelloWorld.vue'
-<b>import AppSyncExample from './components/AppSyncExample.vue'</script></b>
+import AppSyncExample from './components/AppSyncExample.vue'</script>
 
 export default {
   name: 'app',
   components: {
     HelloWorld,
-    <b>ApolloExample</b>
+    ApolloExample
   }
 }
 </script>
@@ -119,4 +116,5 @@ export default {
   margin-top: 60px;
 }
 </style>
-</code></pre>
+```
+
