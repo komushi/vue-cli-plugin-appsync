@@ -27,7 +27,8 @@
   "homepage": "https://github.com/komushi/vue-cli-plugin-appsync#readme",
   "dependencies": {
     "graphql": "^0.13.1",
-    "nodemon": "^1.17.1"
+    "nodemon": "^1.17.1",
+    "npm": "^6.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
