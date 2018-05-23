@@ -30,6 +30,8 @@ vue add appsync
 
 **:information_source: An example `AppSyncExample.vue` component alongside some GraphQL query and setting files will be added into your sources. To make the example work you need to setup one AWS AppSync API as the GraphQL server-side API.**
 
+[**A guide to setup one AWS AppSync API as the GraphQL server-side API**](https://github.com/komushi/vue-appsync-study)
+
 ### 1-4. Modify AppSync.js
 
 Download AppSync.js for Web from AWS AppSync Management Console:
@@ -69,7 +71,7 @@ npm run serve
 
 
 ### 2-3. Modified files by generator
-* src/main.js
+#### 2-3-1. src/main.js
 <pre>
 import Vue from 'vue'
 import App from './App.vue'
@@ -83,7 +85,7 @@ new Vue({
 }).$mount('#app')
 </pre>
 
-* src/App.vue
+#### 2-3-2. src/App.vue
 ```
 <template>
   <div id="app">
@@ -118,3 +120,7 @@ export default {
 </style>
 ```
 
+## 3. Plugin TODOs
+* More AWS AppSync authentication types support: AWS_IAM, Cognito
+* Download and apply the AppSync.js during add the plugin.
+* Build the backend AppSync API during add the plugin.

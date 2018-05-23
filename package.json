@@ -1,6 +1,6 @@
 {
   "name": "vue-cli-plugin-appsync",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "vue-cli 3 plugin to add AppSync and GraphQL",
   "main": "index.js",
   "scripts": {
@@ -43,6 +43,7 @@
     "eslint-plugin-vue": "^4.2.2"
   },
   "peerDependencies": {
-    "@vue/cli-shared-utils": "^3.0.0-beta.6"
+    "@vue/cli-shared-utils": "^3.0.0-beta.6",
+    "chalk": "^2.3.1"
   }
 }

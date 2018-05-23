@@ -1,3 +1,5 @@
+const chalk = require('chalk')
+
 module.exports = (api, options, rootOptions) => {
   const pkg = {
     dependencies: {
@@ -77,5 +79,7 @@ module.exports = (api, options, rootOptions) => {
     } catch (e) {
       // No ESLint vue-cli plugin
     }
+
+    api.exitLog(`Please overwrite/modify ${chalk.cyan('src/graphql/config/AppSync.js')} before using 'npm run serve or build'`, 'info')
   })
 }
