@@ -1,0 +1,14 @@
+{
+  "version": "2017-02-28",
+  "operation": "PutItem",
+  "key": {
+    "title": $util.dynamodb.toDynamoDBJson($ctx.args.input.title),
+  },
+  "attributeValues": $util.dynamodb.toMapValuesJson($ctx.args.input),
+  "condition": {
+    "expression": "attribute_not_exists(#title)",
+    "expressionNames": {
+      "#title": "title",
+    },
+  },
+}

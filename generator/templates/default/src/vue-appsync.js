@@ -1,18 +1,18 @@
 import Vue from 'vue'
 import VueApollo from 'vue-apollo'
-import AWSAppSyncClient from "aws-appsync"
-import appSyncConfig from './AppSync'
+import AWSAppSyncClient from 'aws-appsync'
+import awsmobile from './aws-exports'
 
 // Install the vue plugin
 Vue.use(VueApollo);
 
 // Config
 const config = {
-  url: appSyncConfig.graphqlEndpoint,
-  region: appSyncConfig.region,
+  url: awsmobile.aws_appsync_graphqlEndpoint,
+  region: awsmobile.aws_appsync_region,
   auth: {
-    type: appSyncConfig.authenticationType,
-    apiKey: appSyncConfig.apiKey,
+    type: awsmobile.aws_appsync_authenticationType,
+    apiKey: awsmobile.aws_appsync_apiKey,
   }
 };
 

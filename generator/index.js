@@ -34,7 +34,7 @@ module.exports = (api, options, rootOptions) => {
 
       // Inject import
       const lastImportIndex = lines.findIndex(line => line.match(/^import/))
-      lines[lastImportIndex] += `\nimport { appSyncProvider } from './graphql/config/vue-appsync'`
+      lines[lastImportIndex] += `\nimport { appSyncProvider } from './vue-appsync'`
 
       // Modify app
       const appIndex = lines.findIndex(line => line.match(/new Vue/))
@@ -43,7 +43,7 @@ module.exports = (api, options, rootOptions) => {
       content = lines.reverse().join('\n')
       fs.writeFileSync(mainPath, content, { encoding: 'utf8' })
     } catch (e) {
-      api.exitLog(`Your main file couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync#manual-code-changes`, 'warn')
+      api.exitLog(`Your main file couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
     }
 
     // Modify App.vue
@@ -69,7 +69,7 @@ module.exports = (api, options, rootOptions) => {
       vueContent = vueLines.reverse().join('\n')
       fs.writeFileSync(vuePath, vueContent, { encoding: 'utf8' })
     } catch (e) {
-      api.exitLog(`Your main file couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync#manual-code-changes`, 'warn')
+      api.exitLog(`Your main file couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
     }
 
     // Linting
@@ -80,6 +80,6 @@ module.exports = (api, options, rootOptions) => {
       // No ESLint vue-cli plugin
     }
 
-    api.exitLog(`Please overwrite/modify ${chalk.cyan('src/graphql/config/AppSync.js')} before using 'npm run serve or build'`, 'info')
+    api.exitLog(`Please run ${chalk.red('awsmobile init --yes')} before using 'npm run serve or build'`, 'info')
   })
 }

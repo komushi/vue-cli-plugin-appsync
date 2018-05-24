@@ -1,0 +1,37 @@
+{
+    "dataSources": [
+        {
+            "name": "BookTable",
+            "description": null,
+            "type": "AMAZON_DYNAMODB",
+            "serviceRoleArn": "{managed-by-awsmobile-cli}",
+            "dynamodbConfig": {
+                "tableName": "BookTable-{suffix}",
+                "awsRegion": "ap-northeast-1",
+                "useCallerCredentials": false
+            }
+        }
+    ],
+    "tables": [
+        {
+            "AttributeDefinitions": [
+                {
+                    "AttributeName": "title",
+                    "AttributeType": "S"
+                }
+            ],
+            "TableName": "BookTable-{suffix}",
+            "KeySchema": [
+                {
+                    "AttributeName": "title",
+                    "KeyType": "HASH"
+                }
+            ],
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 5,
+                "WriteCapacityUnits": 5
+            },
+            "Region": "ap-northeast-1"
+        }
+    ]
+}

@@ -1,0 +1,59 @@
+type Book {
+    title: String!
+    gender: Gender!
+    author: String
+}
+
+type BookConnection {
+    items: [Book]
+    nextToken: String
+}
+
+input CreateBookInput {
+    title: String!
+    gender: Gender!
+    author: String
+}
+
+input DeleteBookInput {
+    title: String!
+}
+
+enum Gender {
+    Male
+    Female
+}
+
+type Mutation {
+    createBook(input: CreateBookInput!): Book
+    updateBook(input: UpdateBookInput!): Book
+    deleteBook(input: DeleteBookInput!): Book
+}
+
+type Query {
+    getAllBooks: [Book]
+    getBooksByGender(gender: Gender): [Book]
+    getBook(title: String!): Book
+    listBooks(first: Int, after: String): BookConnection
+}
+
+type Subscription {
+    onCreateBook(title: String, author: String): Book
+        @aws_subscribe(mutations: ["createBook"])
+    onUpdateBook(title: String, author: String): Book
+        @aws_subscribe(mutations: ["updateBook"])
+    onDeleteBook(title: String, author: String): Book
+        @aws_subscribe(mutations: ["deleteBook"])
+}
+
+input UpdateBookInput {
+    title: String!
+    gender: Gender!
+    author: String
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+}

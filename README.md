@@ -13,14 +13,21 @@ This is a vue-cli 3.x plugin to add AppSync and GraphQL in your Vue project.
 vue --version
 ```
 
-### 1-2. Create vue a project
+### 1-2. Check awsmobile-cli version:
+:warning: Make sure you have awsmobile-cli 1.1.x:
+
+```
+awsmobile -V
+```
+
+### 1-3. Create vue a project
 If you don't have a project created with vue-cli 3.x yet:
 
 ```
 vue create my-new-app
 ```
 
-### 1-3. Apply the AppSync plugin
+### 1-4. Apply the AppSync plugin
 Navigate to the newly created project folder and add the cli plugin:
 
 ```
@@ -28,28 +35,27 @@ cd my-new-app
 vue add appsync
 ```
 
+### 1-5. Modify AppSync.js
+
 **:information_source: An example `AppSyncExample.vue` component alongside some GraphQL query and setting files will be added into your sources. To make the example work you need to setup one AWS AppSync API as the GraphQL server-side API.**
 
 [**A guide to setup one AWS AppSync API as the GraphQL server-side API**](https://github.com/komushi/vue-appsync-study)
 
-### 1-4. Modify AppSync.js
-
-Download AppSync.js for Web from AWS AppSync Management Console:
-Overwrite src/graphql/config/AppSync.js
+**Or setup it by using awsmobile-cli**
 ```
-export default {
-    "graphqlEndpoint": "https://1234567890.appsync-api.ap-northeast-1.amazonaws.com/graphql",
-    "region": "ap-northeast-1",
-    "authenticationType": "API_KEY",
-    "apiKey": "apikey1234567890"
-}
+awsmobile init --yes
 ```
 
-
-### 1-5. Start your app
+### 1-6. Start your app
 
 ```
 npm run serve
+```
+
+*Or if you use awsmobile*
+
+```
+awsmobile run
 ```
 
 ## 2. Plugin process
@@ -61,21 +67,20 @@ npm run serve
 
 ### 2-2. Added files in generator template
 * AppSyncExample.js -> src/components/AppSyncExample.js
-* AppSync.js -> src/graphql/config/AppSync.js
-* vue-appsync.js -> src/graphql/config/vue-appsync.js
-* GetAllBooks.gql -> src/graphql/queries/GetAllBooks.gql
-* CreateBook.gql -> src/graphql/queries/CreateBook.gql
-* DeleteBook.gql -> src/graphql/queries/DeleteBook.gql
-* OnCreateBook.gql -> src/graphql/queries/OnCreateBook.gql
-* OnDeleteBook.gql -> src/graphql/queries/OnDeleteBook.gql
-
+* vue-appsync.js -> src/vue-appsync.js
+* GetAllBooks.gql -> src/graphql/GetAllBooks.gql
+* CreateBook.gql -> src/graphql/CreateBook.gql
+* DeleteBook.gql -> src/graphql/DeleteBook.gql
+* OnCreateBook.gql -> src/graphql/OnCreateBook.gql
+* OnDeleteBook.gql -> src/graphql/OnDeleteBook.gql
+* Folder awsmobilejs -> awsmobilejs
 
 ### 2-3. Modified files by generator
 #### 2-3-1. src/main.js
 <pre>
 import Vue from 'vue'
 import App from './App.vue'
-<b>import { appSyncProvider } from './graphql/vue-appsync'</b>
+<b>import { appSyncProvider } from './vue-appsync'</b>
 
 Vue.config.productionTip = false
 
@@ -121,6 +126,5 @@ export default {
 ```
 
 ## 3. Plugin TODOs
-* More AWS AppSync authentication types support: AWS_IAM, Cognito
-* Download and apply the AppSync.js during add the plugin.
-* Build the backend AppSync API during add the plugin.
+* More AWS AppSync authentication types support: AWS_IAM, Cognito, OpenID.
+* Better approach to integrate with AWS Amplify(awsmobile).
