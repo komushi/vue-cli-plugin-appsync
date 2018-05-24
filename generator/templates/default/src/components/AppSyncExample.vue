@@ -9,15 +9,15 @@
 
     <!-- Book example -->
     <ApolloQuery
-      :query="require('../graphql/queries/GetAllBooks.gql')"
+      :query="require('../graphql/GetAllBooks.gql')"
     >
       <ApolloSubscribeToMore
-        :document="require('../graphql/queries/OnCreateBook.gql')"
+        :document="require('../graphql/OnCreateBook.gql')"
         :update-query="onCreateBook"
       />
 
       <ApolloSubscribeToMore
-        :document="require('../graphql/queries/OnDeleteBook.gql')"
+        :document="require('../graphql/OnDeleteBook.gql')"
         :update-query="onDeleteBook"
       />
 
@@ -69,8 +69,8 @@
 </template>
 
 <script>
-import MUTATION_CREATE_BOOK from '../graphql/queries/CreateBook.gql'
-import MUTATION_DELETE_BOOK from '../graphql/queries/DeleteBook.gql'
+import MUTATION_CREATE_BOOK from '../graphql/CreateBook.gql'
+import MUTATION_DELETE_BOOK from '../graphql/DeleteBook.gql'
 
 export default {
   data () {
