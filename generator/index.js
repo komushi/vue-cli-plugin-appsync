@@ -80,6 +80,6 @@ module.exports = (api, options, rootOptions) => {
       // No ESLint vue-cli plugin
     }
 
-    api.exitLog(`Please run ${chalk.red('awsmobile init --yes')} before using 'npm run serve or build'`, 'info')
+    api.exitLog(`Please run ${chalk.red('awsmobile init --yes')} before using 'awsmobile run'`, 'info')
   })
 }

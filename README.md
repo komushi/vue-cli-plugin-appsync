@@ -13,14 +13,14 @@ This is a vue-cli 3.x plugin to add AppSync and GraphQL in your Vue project.
 vue --version
 ```
 
-### 1-2. Check awsmobile-cli version:
+### 1-2. Check AWS Mobile CLI version:
 :warning: Make sure you have awsmobile-cli 1.1.x:
 
 ```
 awsmobile -V
 ```
 
-### 1-3. Create vue a project
+### 1-3. Create a vue project
 If you don't have a project created with vue-cli 3.x yet:
 
 ```
@@ -35,13 +35,13 @@ cd my-new-app
 vue add appsync
 ```
 
-### 1-5. Modify AppSync.js
+### 1-5. Setup AWS AppSync API 
 
 **:information_source: An example `AppSyncExample.vue` component alongside some GraphQL query and setting files will be added into your sources. To make the example work you need to setup one AWS AppSync API as the GraphQL server-side API.**
 
-[**A guide to setup one AWS AppSync API as the GraphQL server-side API**](https://github.com/komushi/vue-appsync-study)
+[**A guide to setup one AWS AppSync API as the GraphQL server-side API**](https://github.com/komushi/vue-appsync-study#2-manually-setup-aws-appsync-graphql-api-server-side-with-aws-management-console)
 
-**Or setup it by using awsmobile-cli**
+**Or setup it by using AWS Mobile CLI**
 ```
 awsmobile init --yes
 ```
