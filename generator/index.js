@@ -1,11 +1,9 @@
 const chalk = require('chalk')
 
 module.exports = (api, options, rootOptions) => {
-  console.log("options", options);
-
   let pkg
 
-  if (options.authType == 'AMAZON_COGNITO_USER_POOLS') {
+  if (options.authType === 'AMAZON_COGNITO_USER_POOLS') {
     pkg = {
       dependencies: {
         'aws-amplify': '^0.4.1',
@@ -13,11 +11,11 @@ module.exports = (api, options, rootOptions) => {
         'graphql': '^0.13.2',
         'vue-apollo': '^3.0.0-beta.10',
         'vue-router': '^3.0.1',
-        'vuex': '^3.0.1'
+        'vuex': '^3.0.1',
       },
       devDependencies: {
         'graphql-tag': '^2.9.0',
-        'eslint-plugin-graphql': '^2.1.0'
+        'eslint-plugin-graphql': '^2.1.0',
       },
     }
   } else {
@@ -27,11 +25,11 @@ module.exports = (api, options, rootOptions) => {
         'aws-appsync': '^1.0.20',
         'graphql': '^0.13.2',
         'vue-apollo': '^3.0.0-beta.10',
-        'vue-router': '^3.0.1'
+        'vue-router': '^3.0.1',
       },
       devDependencies: {
         'graphql-tag': '^2.9.0',
-        'eslint-plugin-graphql': '^2.1.0'
+        'eslint-plugin-graphql': '^2.1.0',
       },
     }
   }
@@ -89,7 +87,6 @@ module.exports = (api, options, rootOptions) => {
       }
     }
 
-
     // Modify router.js
     try {
       const routerPath = api.resolve('./src/router.js')
@@ -103,7 +100,7 @@ module.exports = (api, options, rootOptions) => {
       routerLines[lastImportIndex] += `\nimport { AppSyncRouter } from '@/appsync'`
 
       // Inject import Cognito
-      if (options.authType == 'AMAZON_COGNITO_USER_POOLS') {
+      if (options.authType === 'AMAZON_COGNITO_USER_POOLS') {
         routerLines[lastImportIndex] += `\nimport { AuthRouter, AuthFilter } from '@/amplify'`
       }
 
@@ -112,10 +109,10 @@ module.exports = (api, options, rootOptions) => {
       routerLines[firstRoutesIndex - 1] += `\n\t\t\tAppSyncRouter,`
 
       // Inject route Cognito
-      if (options.authType == 'AMAZON_COGNITO_USER_POOLS') {
+      if (options.authType === 'AMAZON_COGNITO_USER_POOLS') {
         routerLines[firstRoutesIndex - 1] += `\n\t\t\tAuthRouter,`
       }
-      
+
       routerContent = routerLines.reverse().join('\n')
       fs.writeFileSync(routerPath, routerContent, { encoding: 'utf8' })
     } catch (e) {
@@ -123,7 +120,7 @@ module.exports = (api, options, rootOptions) => {
     }
 
     // Modify graphqlApi.json
-    if (options.authType == 'AMAZON_COGNITO_USER_POOLS') {
+    if (options.authType === 'AMAZON_COGNITO_USER_POOLS') {
       try {
         const gqlPath = api.resolve('./awsmobilejs/backend/appsync/graphqlApi.json')
 

@@ -1,6 +1,6 @@
 {
   "name": "vue-cli-plugin-appsync",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "vue-cli 3 plugin to add AppSync and GraphQL",
   "main": "index.js",
   "scripts": {
