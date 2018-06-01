@@ -21,10 +21,23 @@ awsmobile -V
 ```
 
 ### 1-3. Create a vue project
-If you don't have a project created with vue-cli 3.x yet:
-
+Create a project with vue-cli 3.x:
+**Use Babel, Router, Linter with default settings**
 ```
 vue create my-new-app
+
+Vue CLI v3.0.0-beta.15
+? Please pick a preset: Manually select features
+? Check the features needed for your project: 
+ ◉ Babel
+ ◯ TypeScript
+ ◯ Progressive Web App (PWA) Support
+❯◉ Router
+ ◯ Vuex
+ ◯ CSS Pre-processors
+ ◉ Linter / Formatter
+ ◯ Unit Testing
+ ◯ E2E Testing
 ```
 
 ### 1-4. Apply the AppSync plugin
@@ -126,5 +139,4 @@ export default {
 ```
 
 ## 3. Plugin TODOs
-* More AWS AppSync authentication types support: AWS_IAM, Cognito, OpenID.
-* Better approach to integrate with AWS Amplify(awsmobile).
+* More AWS AppSync authentication types support: AWS_IAM, OpenID.

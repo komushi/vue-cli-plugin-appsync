@@ -4,6 +4,7 @@
     <h4>One AWS AppSync API as the GraphQL server-side API is required for this example.</h4>
     <h4>Check the below links for AWS AppSync settings guide:</h4>
     <a href="https://github.com/komushi/vue-appsync-study" target="_blank">vue-appsync-study</a>
+    <br/>
     <a href="https://github.com/komushi/vue-cli-plugin-appsync" target="_blank">vue-cli-plugin-appsync</a>
 
 
