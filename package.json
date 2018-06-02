@@ -1,6 +1,6 @@
 {
   "name": "vue-cli-plugin-appsync",
-  "version": "0.2.1",
+  "version": "0.2.4",
   "description": "vue-cli 3 plugin to add AppSync and GraphQL",
   "main": "index.js",
   "scripts": {
@@ -26,9 +26,7 @@
   },
   "homepage": "https://github.com/komushi/vue-cli-plugin-appsync#readme",
   "dependencies": {
-    "graphql": "^0.13.1",
-    "nodemon": "^1.17.1",
-    "npm": "^6.0.1"
+    "node-cmd": "^3.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

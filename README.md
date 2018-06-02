@@ -20,7 +20,20 @@ vue --version
 awsmobile -V
 ```
 
-### 1-3. Create a vue project
+### 1-3. Configure AWS Mobile CLI:
+**Choose your region**
+
+```
+$awsmobile configure aws
+
+configure aws
+? accessKeyId:  <accessKeyId>
+? secretAccessKey:  <secretAccessKey>
+? region:  ap-northeast-1
+```
+
+
+### 1-4. Create a vue project
 Create a project with vue-cli 3.x:
 **Use Babel, Router, Linter with default settings**
 ```
@@ -40,7 +53,7 @@ Vue CLI v3.0.0-beta.15
  ◯ E2E Testing
 ```
 
-### 1-4. Apply the AppSync plugin
+### 1-5. Apply the AppSync plugin
 Navigate to the newly created project folder and add the cli plugin:
 
 ```
@@ -48,7 +61,7 @@ cd my-new-app
 vue add appsync
 ```
 
-### 1-5. Setup AWS AppSync API 
+### 1-6. Setup AWS AppSync API 
 
 **:information_source: An example `AppSyncExample.vue` component alongside some GraphQL query and setting files will be added into your sources. To make the example work you need to setup one AWS AppSync API as the GraphQL server-side API.**
 
@@ -59,7 +72,7 @@ vue add appsync
 awsmobile init --yes
 ```
 
-### 1-6. Start your app
+### 1-7. Start your app
 
 ```
 npm run serve
@@ -79,64 +92,78 @@ awsmobile run
 - `config.rule('gql')`
 
 ### 2-2. Added files in generator template
-* AppSyncExample.js -> src/components/AppSyncExample.js
-* vue-appsync.js -> src/vue-appsync.js
-* GetAllBooks.gql -> src/graphql/GetAllBooks.gql
-* CreateBook.gql -> src/graphql/CreateBook.gql
-* DeleteBook.gql -> src/graphql/DeleteBook.gql
-* OnCreateBook.gql -> src/graphql/OnCreateBook.gql
-* OnDeleteBook.gql -> src/graphql/OnDeleteBook.gql
-* Folder awsmobilejs -> awsmobilejs
+* Folder amplify -> src/amplify
+* Folder awsmobilejs -> src/awsmobilejs
 
 ### 2-3. Modified files by generator
 #### 2-3-1. src/main.js
-<pre>
+```
 import Vue from 'vue'
 import App from './App.vue'
-<b>import { appSyncProvider } from './vue-appsync'</b>
+import { AppSyncProvider } from '@/appsync'
+import router from './router'
 
 Vue.config.productionTip = false
 
 new Vue({
-    <b>provide: appSyncProvider.provide(),</b>
-    render: h => h(App)
+  router: router,
+  provide: AppSyncProvider.provide(),
+  render: h => h(App)
 }).$mount('#app')
-</pre>
+```
 
 #### 2-3-2. src/App.vue
 ```
 <template>
   <div id="app">
-    <app-sync-example></app-sync-example>
-    <img src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <div id="nav">
+      <router-link to="/">Home</router-link> |
+      <router-link to="/appsync">AppSync Example</router-link> |
+      <router-link to="/about">About</router-link>
+    </div>
+    <router-view/>
   </div>
 </template>
-
-<script>
-import HelloWorld from './components/HelloWorld.vue'
-import AppSyncExample from './components/AppSyncExample.vue'</script>
-
-export default {
-  name: 'app',
-  components: {
-    HelloWorld,
-    ApolloExample
-  }
-}
-</script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
 ```
+
+#### 2-3-3. src/router.js
+```
+import Vue from 'vue'
+import Router from 'vue-router'
+import Home from './views/Home.vue'
+import About from './views/About.vue'
+import { AppSyncRouter } from '@/appsync'
+import { AuthRouter, AuthFilter } from '@/amplify'
+
+Vue.use(Router)
+
+const router = new Router({
+  routes: [
+    {
+      path: '/',
+      name: 'home',
+      component: Home
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: About
+    },
+    AppSyncRouter,
+    AuthRouter
+  ]
+})
+
+router.beforeEach(AuthFilter);
+
+export default router
+```
+
+#### 2-3-4. awsmobilejs/backend/appsync/graphqlApi.json
+**authenticationType**
+
+#### 2-3-5. awsmobilejs/backend/appsync/dataSources.json
+**awsRegion & Region**
 
 ## 3. Plugin TODOs
 * More AWS AppSync authentication types support: AWS_IAM, OpenID.
