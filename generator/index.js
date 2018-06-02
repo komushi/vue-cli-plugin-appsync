@@ -1,5 +1,5 @@
 const chalk = require('chalk')
-const cmd = require('node-cmd')
+// const cmd = require('node-cmd')
 
 module.exports = (api, options, rootOptions) => {
   let pkg
@@ -131,7 +131,7 @@ module.exports = (api, options, rootOptions) => {
     } catch (e) {
       api.exitLog(`Your router.js couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
     }
-
+    /*
     // Modify graphqlApi.json
     try {
       const gqlPath = api.resolve('./awsmobilejs/backend/appsync/graphqlApi.json')
@@ -174,7 +174,7 @@ module.exports = (api, options, rootOptions) => {
 
           // Replace Region
           const regionIndex = dsLines.findIndex(line => line.match(/"Region"/))
-          dsLines[regionIndex] = `\t\t\t"Region": "` + awsRegion + `",`
+          dsLines[regionIndex] = `\t\t\t"Region": "` + awsRegion + `"`
 
           dsContent = dsLines.reverse().join('\n')
           fs.writeFileSync(dsPath, dsContent, { encoding: 'utf8' })
@@ -183,7 +183,7 @@ module.exports = (api, options, rootOptions) => {
         }
       }
     })
-
+    */
     // Linting
     try {
       const lint = require('@vue/cli-plugin-eslint/lint')
