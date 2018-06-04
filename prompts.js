@@ -10,5 +10,6 @@ module.exports = [
     name: 'authType',
     message: 'What is the authentication type?',
     choices: ['API_KEY', 'AMAZON_COGNITO_USER_POOLS'],
+    when: answers => answers.addExample,
   },
 ]

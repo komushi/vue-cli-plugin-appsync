@@ -59,6 +59,9 @@ Navigate to the newly created project folder and add the cli plugin:
 ```
 cd my-new-app
 vue add appsync
+
+? Add an AppSync Example page? Yes
+? What is the authentication type? API_KEY
 ```
 
 ### 1-6. Setup AWS AppSync API 

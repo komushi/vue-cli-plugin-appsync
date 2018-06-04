@@ -1,5 +1,5 @@
 const chalk = require('chalk')
-// const cmd = require('node-cmd')
+const cmd = require('node-cmd')
 
 module.exports = (api, options, rootOptions) => {
   let pkg
@@ -55,12 +55,16 @@ module.exports = (api, options, rootOptions) => {
       const lines = content.split(/\r?\n/g).reverse()
 
       // Inject import
-      const lastImportIndex = lines.findIndex(line => line.match(/^import/))
-      lines[lastImportIndex] += `\nimport { AppSyncProvider } from '@/appsync'`
+      if (lines.findIndex(line => line.match(/import { AppSyncProvider }/)) === -1) {
+        const lastImportIndex = lines.findIndex(line => line.match(/^import/))
+        lines[lastImportIndex] += `\nimport { AppSyncProvider } from '@/appsync'`
+      }
 
       // Modify app
-      const appIndex = lines.findIndex(line => line.match(/new Vue/))
-      lines[appIndex] += `\n  provide: AppSyncProvider.provide(),`
+      if (lines.findIndex(line => line.match(/AppSyncProvider.provide()/)) === -1) {
+        const appIndex = lines.findIndex(line => line.match(/new Vue/))
+        lines[appIndex] += `\n  provide: AppSyncProvider.provide(),`
+      }
 
       content = lines.reverse().join('\n')
       fs.writeFileSync(mainPath, content, { encoding: 'utf8' })
@@ -78,8 +82,10 @@ module.exports = (api, options, rootOptions) => {
         const vueLines = vueContent.split(/\r?\n/g).reverse()
 
         // Inject router-link
-        const vueLastRouterIndex = vueLines.findIndex(line => line.match(/<router-link/))
-        vueLines[vueLastRouterIndex + 1] += `\n\t\t\t<router-link to="/appsync">AppSync Example</router-link> |`
+        if (vueLines.findIndex(line => line.match(/AppSync Example/)) === -1) {
+          const vueLastRouterIndex = vueLines.findIndex(line => line.match(/<router-link/))
+          vueLines[vueLastRouterIndex + 1] += `\n\t\t\t<router-link to="/appsync">AppSync Example</router-link> |`
+        }
 
         vueContent = vueLines.reverse().join('\n')
         fs.writeFileSync(vuePath, vueContent, { encoding: 'utf8' })
@@ -88,7 +94,35 @@ module.exports = (api, options, rootOptions) => {
       }
     }
 
-    // Modify router.js
+    // Modify router.js for AppSync Example
+    if (options.addExample) {
+      try {
+        const routerPath = api.resolve('./src/router.js')
+
+        let routerContent = fs.readFileSync(routerPath, { encoding: 'utf8' })
+
+        const routerLines = routerContent.split(/\r?\n/g).reverse()
+
+        if (routerLines.findIndex(line => line.match(/import { AppSyncRouter }/)) === -1) {
+          // Inject import AppSync
+          const lastImportIndex = routerLines.findIndex(line => line.match(/^import/))
+          routerLines[lastImportIndex] += `\nimport { AppSyncRouter } from '@/appsync'`
+        }
+
+        if (routerLines.findIndex(line => line.match(/AppSyncRouter,/)) === -1) {
+          // Inject route AppSync
+          const firstRoutesIndex = routerLines.findIndex(line => line.match(/routes:/))
+          routerLines[firstRoutesIndex] += `\n\t\tAppSyncRouter,`
+        }
+
+        routerContent = routerLines.reverse().join('\n')
+        fs.writeFileSync(routerPath, routerContent, { encoding: 'utf8' })
+      } catch (e) {
+        api.exitLog(`Your router.js couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
+      }
+    }
+
+    // Modify router.js for Cognito
     try {
       const routerPath = api.resolve('./src/router.js')
 
@@ -96,43 +130,39 @@ module.exports = (api, options, rootOptions) => {
 
       const routerLines = routerContent.split(/\r?\n/g).reverse()
 
-      // Inject import AppSync
-      const lastImportIndex = routerLines.findIndex(line => line.match(/^import/))
-      routerLines[lastImportIndex] += `\nimport { AppSyncRouter } from '@/appsync'`
-
-      // Inject import Cognito
       if (options.authType === 'AMAZON_COGNITO_USER_POOLS') {
-        routerLines[lastImportIndex] += `\nimport { AuthRouter, AuthFilter } from '@/amplify'`
+        if (routerLines.findIndex(line => line.match(/AuthRouter,/)) === -1) {
+          // Inject route AppSync
+          const firstRoutesIndex = routerLines.findIndex(line => line.match(/routes:/))
+          routerLines[firstRoutesIndex] += `\n\t\tAuthRouter,`
+        }
+
+        if (routerLines.findIndex(line => line.match(/import { AuthRouter, AuthFilter }/)) === -1) {
+          // Inject import AppSync
+          const lastImportIndex = routerLines.findIndex(line => line.match(/^import/))
+          routerLines[lastImportIndex] += `\nimport { AuthRouter, AuthFilter } from '@/amplify'`
+        }
+
+        if (routerLines.findIndex(line => line.match(/^export default router/)) === -1) {
+          // Inject export
+          const exportIndex = routerLines.findIndex(line => line.match(/^export default/))
+          routerLines[exportIndex] = `const router = new Router({`
+
+          routerLines[0] += `\nrouter.beforeEach(AuthFilter)`
+          routerLines[0] += `\n`
+          routerLines[0] += `\nexport default router`
+        }
       }
-
-      // Inject route AppSync
-      const firstRoutesIndex = routerLines.findIndex(line => line.match(/\s\broutes/))
-      routerLines[firstRoutesIndex] += `\n\t\tAppSyncRouter,`
-
-      // Inject route Cognito
-      if (options.authType === 'AMAZON_COGNITO_USER_POOLS') {
-        routerLines[firstRoutesIndex] += `\n\t\tAuthRouter,`
-      }
-
-      // Inject export
-      const exportIndex = routerLines.findIndex(line => line.match(/^export default/))
-      routerLines[exportIndex] = `const router = new Router({`
-
-      if (options.authType === 'AMAZON_COGNITO_USER_POOLS') {
-        routerLines[0] += `\nrouter.beforeEach(AuthFilter)`
-      }
-
-      routerLines[0] += `\n`
-
-      routerLines[0] += `\nexport default router`
 
       routerContent = routerLines.reverse().join('\n')
       fs.writeFileSync(routerPath, routerContent, { encoding: 'utf8' })
     } catch (e) {
+      api.exitLog(e, 'warn')
       api.exitLog(`Your router.js couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
     }
-    /*
+
     // Modify graphqlApi.json
+    /*
     try {
       const gqlPath = api.resolve('./awsmobilejs/backend/appsync/graphqlApi.json')
 
@@ -149,6 +179,7 @@ module.exports = (api, options, rootOptions) => {
     } catch (e) {
       api.exitLog(`Your graphqlApi.json couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
     }
+    */
 
     // Modify dataSources.json
     cmd.get('awsmobile configure aws -l', (err, data, stderr) => {
@@ -183,7 +214,7 @@ module.exports = (api, options, rootOptions) => {
         }
       }
     })
-    */
+
     // Linting
     try {
       const lint = require('@vue/cli-plugin-eslint/lint')
