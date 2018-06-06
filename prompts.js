@@ -7,9 +7,15 @@ module.exports = [
   },
   {
     type: 'list',
-    name: 'authType',
+    name: 'authenticationType',
     message: 'What is the authentication type?',
     choices: ['API_KEY', 'AMAZON_COGNITO_USER_POOLS'],
     when: answers => answers.addExample,
+  },
+  {
+    type: 'confirm',
+    name: 'createBackend',
+    message: 'Create the AWS AppSync and AWS Mobile Hub Backends?',
+    default: true,
   },
 ]

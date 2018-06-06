@@ -1,10 +1,111 @@
 const chalk = require('chalk')
+const fs = require('fs')
 const cmd = require('node-cmd')
+const JsSearch = require('js-search')
+
+let awsRegion
+
+const getRegion = () => {
+  return new Promise((resolve, reject) => {
+    if (awsRegion) {
+      resolve(awsRegion)
+    } else {
+      cmd.get('awsmobile configure aws -l', (err, data, stderr) => {
+        if (err) {
+          api.exitLog(`Your awsmobile configure couldn't be retrieved.`, 'warn')
+
+          reject(err)
+        } else {
+          const awsmobileLines = data.split(/\r?\n/g)
+
+          const index = awsmobileLines.findIndex(line => line.match(/region/))
+
+          awsRegion = awsmobileLines[index].match(/'([^']+)'/)[1]
+
+          resolve(awsRegion)
+        }
+      })
+    }
+  })
+}
+
+const createBackend = () => {
+  return new Promise((resolve, reject) => {
+    cmd.get('awsmobile init --yes', (err, data, stderr) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
+  })
+}
+
+const getBackendInfo = (api) => {
+  return new Promise((resolve, reject) => {
+
+    const path = api.resolve('./awsmobilejs/#current-backend-info/backend-details.json')
+
+    let content = fs.readFileSync(path, { encoding: 'utf8' })
+    contentObj = JSON.parse(content)
+    
+    const name = contentObj.name
+    const region = contentObj.region
+
+    const search = new JsSearch.Search('userpool')
+    search.addIndex('type')
+    search.addDocuments(contentObj.resources)
+    const userPoolId = search.search('UserPool')[0].arn
+
+    const backendInfo = {}
+    backendInfo['userPoolId'] = userPoolId
+    backendInfo['name'] = userPoolId
+    backendInfo['awsRegion'] = region
+
+    resolve(backendInfo)
+
+  })
+}
+
+const writeGraphqlApi = (api, authenticationType, backendInfo) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const path = api.resolve('./awsmobilejs/backend/appsync/graphqlApi.json')
+
+      const contentObj = {}
+      const userPoolConfig = {}
+
+      userPoolConfig['userPoolId'] = backendInfo.userPoolId
+      userPoolConfig['awsRegion'] = backendInfo.awsRegion
+      userPoolConfig['defaultAction'] = 'ALLOW'
+
+      contentObj['name'] = backendInfo.name
+      contentObj['authenticationType'] = authenticationType
+      contentObj['userPoolConfig'] = userPoolConfig
+
+      fs.writeFileSync(path, JSON.stringify(contentObj), { encoding: 'utf8' })
+
+      resolve()
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
+
+const updateBackend = () => {
+  return new Promise((resolve, reject) => {
+    cmd.run('awsmobile push', (err, data, stderr) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
+  })
+}
 
 module.exports = (api, options, rootOptions) => {
-  let pkg
-
-  if (options.authType === 'AMAZON_COGNITO_USER_POOLS') {
+  if (options.authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
     pkg = {
       dependencies: {
         'aws-amplify': '^0.4.1',
@@ -42,7 +143,6 @@ module.exports = (api, options, rootOptions) => {
   })
 
   api.onCreateComplete(() => {
-    const fs = require('fs')
 
     // Modify main.js
     try {
@@ -130,7 +230,7 @@ module.exports = (api, options, rootOptions) => {
 
       const routerLines = routerContent.split(/\r?\n/g).reverse()
 
-      if (options.authType === 'AMAZON_COGNITO_USER_POOLS') {
+      if (options.authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
         if (routerLines.findIndex(line => line.match(/AuthRouter,/)) === -1) {
           // Inject route AppSync
           const firstRoutesIndex = routerLines.findIndex(line => line.match(/routes:/))
@@ -157,41 +257,12 @@ module.exports = (api, options, rootOptions) => {
       routerContent = routerLines.reverse().join('\n')
       fs.writeFileSync(routerPath, routerContent, { encoding: 'utf8' })
     } catch (e) {
-      api.exitLog(e, 'warn')
       api.exitLog(`Your router.js couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
     }
 
-    // Modify graphqlApi.json
-    /*
-    try {
-      const gqlPath = api.resolve('./awsmobilejs/backend/appsync/graphqlApi.json')
-
-      let gqlContent = fs.readFileSync(gqlPath, { encoding: 'utf8' })
-
-      const gqlLines = gqlContent.split(/\r?\n/g).reverse()
-
-      // Inject router-link
-      const authIndex = gqlLines.findIndex(line => line.match(/"authenticationType/))
-      gqlLines[authIndex] = `\t"authenticationType": "` + options.authType + `"`
-
-      gqlContent = gqlLines.reverse().join('\n')
-      fs.writeFileSync(gqlPath, gqlContent, { encoding: 'utf8' })
-    } catch (e) {
-      api.exitLog(`Your graphqlApi.json couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
-    }
-    */
-
     // Modify dataSources.json
-    cmd.get('awsmobile configure aws -l', (err, data, stderr) => {
-      if (err) {
-        api.exitLog(`Your awsmobile configure couldn't be retrieved.`, 'warn')
-      } else {
-        const awsmobileLines = data.split(/\r?\n/g)
-
-        const index = awsmobileLines.findIndex(line => line.match(/region/))
-
-        let awsRegion = awsmobileLines[index].match(/'([^']+)'/)[1]
-
+    getRegion()
+      .then((awsRegion) => {
         try {
           const dsPath = api.resolve('./awsmobilejs/backend/appsync/dataSources.json')
 
@@ -212,8 +283,7 @@ module.exports = (api, options, rootOptions) => {
         } catch (e) {
           api.exitLog(`Your dataSources.json couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
         }
-      }
-    })
+      });
 
     // Linting
     try {
@@ -223,6 +293,25 @@ module.exports = (api, options, rootOptions) => {
       // No ESLint vue-cli plugin
     }
 
-    api.exitLog(`Please run ${chalk.red('awsmobile init --yes')} before using 'awsmobile run'`, 'info')
+    // Create Backends
+    if (options.createBackend) {
+      api.exitLog(`Creating Backend...`, 'info')
+      
+      createBackend()
+        .then(() => {
+          return getBackendInfo(api)
+        })
+        .then(backendInfo => { 
+          return writeGraphqlApi(api, options.authenticationType, backendInfo)
+        })
+        .then(updateBackend)
+        // .catch(error => {
+        //   api.exitLog(`Backend creation failed: ${chalk.red(` + error + `)}`, 'warn')
+        // })
+      api.exitLog(`Please run ${chalk.blue('awsmobile run')} to start the vue application.`, 'info')
+    } else {
+      api.exitLog(`Please run ${chalk.blue('awsmobile init --yes')} to deploy the backend.`, 'info')
+    }
+    
   })
 }

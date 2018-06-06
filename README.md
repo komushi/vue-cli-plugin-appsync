@@ -170,3 +170,27 @@ export default router
 
 ## 3. Plugin TODOs
 * More AWS AppSync authentication types support: AWS_IAM, OpenID.
+
+-------------------------------
+
+1. awsmobile init --yes
+
+2. awsmobilejs/#current-backend-info/backend-details.json => find AWS::Cognito::UserPool
+
+3. Get awsRegion
+
+4. Edit graphqlApi.json
+```
+{
+    "name": "{managed-by-awsmobile-cli}",
+    "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+    "userPoolConfig": {
+        "userPoolId": "ap-northeast-1_3wcD548nI",
+        "awsRegion": "ap-northeast-1",
+        "defaultAction": "ALLOW",
+        "appIdClientRegex": null
+    }
+}
+```
+
+4. awsmobile push
