@@ -29,7 +29,7 @@ const getRegion = () => {
   })
 }
 
-const createBackend = () => {
+const deployBackend = () => {
   return new Promise((resolve, reject) => {
     cmd.get('awsmobile init --yes', (err, data, stderr) => {
       if (err) {
@@ -59,7 +59,7 @@ const getBackendInfo = (api) => {
 
     const backendInfo = {}
     backendInfo['userPoolId'] = userPoolId
-    backendInfo['name'] = userPoolId
+    backendInfo['name'] = name
     backendInfo['awsRegion'] = region
 
     resolve(backendInfo)
@@ -294,21 +294,22 @@ module.exports = (api, options, rootOptions) => {
     }
 
     // Create Backends
-    if (options.createBackend) {
-      api.exitLog(`Creating Backend...`, 'info')
-      
-      createBackend()
-        .then(() => {
-          return getBackendInfo(api)
-        })
-        .then(backendInfo => { 
-          return writeGraphqlApi(api, options.authenticationType, backendInfo)
-        })
-        .then(updateBackend)
-        // .catch(error => {
-        //   api.exitLog(`Backend creation failed: ${chalk.red(` + error + `)}`, 'warn')
-        // })
-      api.exitLog(`Please run ${chalk.blue('awsmobile run')} to start the vue application.`, 'info')
+    if (options.deployBackend) {
+      api.exitLog(`Deploying Backend...`, 'info')
+      api.exitLog(`Please run ${chalk.blue('awsmobile run')} or ${chalk.blue('npm run serve')} to start the vue application.`, 'info')
+
+      if (options.authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
+        deployBackend()
+          .then(() => {
+            return getBackendInfo(api)
+          })
+          .then(backendInfo => { 
+            return writeGraphqlApi(api, options.authenticationType, backendInfo)
+          })
+          .then(updateBackend)
+      } else {
+        deployBackend()
+      }
     } else {
       api.exitLog(`Please run ${chalk.blue('awsmobile init --yes')} to deploy the backend.`, 'info')
     }

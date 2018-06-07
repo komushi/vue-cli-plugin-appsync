@@ -61,10 +61,12 @@ cd my-new-app
 vue add appsync
 
 ? Add an AppSync Example page? Yes
-? What is the authentication type? API_KEY
+? What is the authentication type? AMAZON_COGNITO_USER_POOLS
+? Deploy the AWS AppSync and AWS Mobile Hub Backends? Yes
 ```
 
 ### 1-6. Setup AWS AppSync API 
+**Skip this step if you already chose yes for 'Deploy the AWS AppSync and AWS Mobile Hub Backends'**
 
 **:information_source: An example `AppSyncExample.vue` component alongside some GraphQL query and setting files will be added into your sources. To make the example work you need to setup one AWS AppSync API as the GraphQL server-side API.**
 
@@ -169,28 +171,4 @@ export default router
 **awsRegion & Region**
 
 ## 3. Plugin TODOs
-* More AWS AppSync authentication types support: AWS_IAM, OpenID.
-
--------------------------------
-
-1. awsmobile init --yes
-
-2. awsmobilejs/#current-backend-info/backend-details.json => find AWS::Cognito::UserPool
-
-3. Get awsRegion
-
-4. Edit graphqlApi.json
-```
-{
-    "name": "{managed-by-awsmobile-cli}",
-    "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-    "userPoolConfig": {
-        "userPoolId": "ap-northeast-1_3wcD548nI",
-        "awsRegion": "ap-northeast-1",
-        "defaultAction": "ALLOW",
-        "appIdClientRegex": null
-    }
-}
-```
-
-4. awsmobile push
+* More AWS AppSync authentication types support: OpenID

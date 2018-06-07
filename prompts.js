@@ -14,8 +14,8 @@ module.exports = [
   },
   {
     type: 'confirm',
-    name: 'createBackend',
-    message: 'Create the AWS AppSync and AWS Mobile Hub Backends?',
+    name: 'deployBackend',
+    message: 'Deploy the AWS AppSync and AWS Mobile Hub Backends?',
     default: true,
   },
 ]
