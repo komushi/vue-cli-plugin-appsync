@@ -12,8 +12,6 @@ const getRegion = () => {
     } else {
       cmd.get('awsmobile configure aws -l', (err, data, stderr) => {
         if (err) {
-          api.exitLog(`Your awsmobile configure couldn't be retrieved.`, 'warn')
-
           reject(err)
         } else {
           const awsmobileLines = data.split(/\r?\n/g)
@@ -43,12 +41,11 @@ const deployBackend = () => {
 
 const getBackendInfo = (api) => {
   return new Promise((resolve, reject) => {
-
     const path = api.resolve('./awsmobilejs/#current-backend-info/backend-details.json')
 
     let content = fs.readFileSync(path, { encoding: 'utf8' })
-    contentObj = JSON.parse(content)
-    
+    let contentObj = JSON.parse(content)
+
     const name = contentObj.name
     const region = contentObj.region
 
@@ -63,7 +60,6 @@ const getBackendInfo = (api) => {
     backendInfo['awsRegion'] = region
 
     resolve(backendInfo)
-
   })
 }
 
@@ -105,6 +101,8 @@ const updateBackend = () => {
 }
 
 module.exports = (api, options, rootOptions) => {
+  let pkg
+
   if (options.authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
     pkg = {
       dependencies: {
@@ -143,7 +141,6 @@ module.exports = (api, options, rootOptions) => {
   })
 
   api.onCreateComplete(() => {
-
     // Modify main.js
     try {
       const tsPath = api.resolve('./src/main.ts')
@@ -283,7 +280,7 @@ module.exports = (api, options, rootOptions) => {
         } catch (e) {
           api.exitLog(`Your dataSources.json couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
         }
-      });
+      })
 
     // Linting
     try {
@@ -303,7 +300,7 @@ module.exports = (api, options, rootOptions) => {
           .then(() => {
             return getBackendInfo(api)
           })
-          .then(backendInfo => { 
+          .then(backendInfo => {
             return writeGraphqlApi(api, options.authenticationType, backendInfo)
           })
           .then(updateBackend)
@@ -313,6 +310,5 @@ module.exports = (api, options, rootOptions) => {
     } else {
       api.exitLog(`Please run ${chalk.blue('awsmobile init --yes')} to deploy the backend.`, 'info')
     }
-    
   })
 }
