@@ -61,6 +61,7 @@ cd my-new-app
 vue add appsync
 
 ? Add an AppSync Example page? Yes
+? What is the datasource type? AMAZON_DYNAMODB
 ? What is the authentication type? AMAZON_COGNITO_USER_POOLS
 ? Deploy the AWS AppSync and AWS Mobile Hub Backends? Yes
 ```
@@ -172,3 +173,4 @@ export default router
 
 ## 3. Plugin TODOs
 * More AWS AppSync authentication types support: OpenID
+* More Resolver types support: Lambda, ElasticSearch

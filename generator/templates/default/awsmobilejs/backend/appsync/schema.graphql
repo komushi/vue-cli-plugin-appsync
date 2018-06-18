@@ -1,6 +1,6 @@
 type Book {
     title: String!
-    gender: Gender!
+    gender: Gender
     author: String
 }
 
@@ -11,7 +11,7 @@ type BookConnection {
 
 input CreateBookInput {
     title: String!
-    gender: Gender!
+    gender: Gender
     author: String
 }
 
@@ -48,7 +48,7 @@ type Subscription {
 
 input UpdateBookInput {
     title: String!
-    gender: Gender!
+    gender: Gender
     author: String
 }
 

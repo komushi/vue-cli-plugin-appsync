@@ -5,7 +5,5 @@ mutation deleteBook ($title: String!) {
 		}
   ) {
     title
-    gender
-    author
   }
 }

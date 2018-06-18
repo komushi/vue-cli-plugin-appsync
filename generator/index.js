@@ -139,11 +139,11 @@ module.exports = (api, options, rootOptions) => {
   if (options.datasourceType === 'NONE') {
     api.render('./templates/local', {
       ...options,
-    })    
+    })
   } else {
     api.render('./templates/default', {
       ...options,
-    }) 
+    })
   }
 
   api.onCreateComplete(() => {
@@ -287,7 +287,7 @@ module.exports = (api, options, rootOptions) => {
           } catch (e) {
             api.exitLog(`Your dataSources.json couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
           }
-        })      
+        })
     }
 
     // Linting

@@ -1,6 +1,7 @@
 <template>
   <div class="app-sync-example">
-    <h3>This is the AppSyncExample Component.</h3>
+    <h2>AppSync Client with DynamoDB Resolvers</h2>
+    <h3>This frame is the scope of the AppSyncExample Component.</h3>
     <h4>One AWS AppSync API as the GraphQL server-side API is required for this example.</h4>
     <h4>Check the below links for AWS AppSync settings guide:</h4>
     <a href="https://github.com/komushi/vue-appsync-study" target="_blank">vue-appsync-study</a>
@@ -123,7 +124,14 @@ export default {
 
       this.$apollo.mutate({
         mutation: MUTATION_DELETE_BOOK,
-        variables: input
+        variables: input,
+        optimisticResponse: {
+          __typename: 'Mutation',
+          deleteBook: {
+            __typename: 'Book',
+            title: input.title
+          }
+        }
       })
     },
     onCreateBook: function(previousResult, { subscriptionData }) {
