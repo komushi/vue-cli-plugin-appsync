@@ -1,0 +1,16 @@
+[
+    {
+        "typeName": "Mutation",
+        "fieldName": "createBook",
+        "dataSourceName": "BookSource",
+        "requestMappingTemplate": "{managed-by-awsmobile-cli}:Mutation.createBook.request",
+        "responseMappingTemplate": "{managed-by-awsmobile-cli}:Mutation.createBook.response"
+    },
+    {
+        "typeName": "Mutation",
+        "fieldName": "deleteBook",
+        "dataSourceName": "BookSource",
+        "requestMappingTemplate": "{managed-by-awsmobile-cli}:Mutation.deleteBook.request",
+        "responseMappingTemplate": "{managed-by-awsmobile-cli}:Mutation.deleteBook.response"
+    }
+]

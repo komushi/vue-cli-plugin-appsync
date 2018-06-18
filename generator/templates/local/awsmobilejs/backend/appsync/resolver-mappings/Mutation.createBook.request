@@ -1,0 +1,8 @@
+{
+  "version": "2017-02-28",
+  "payload": {
+    "title": "${ctx.args.input.title}",
+    "author": "${ctx.args.input.author}",
+    "gender":  "${ctx.args.input.gender}"
+  }
+}

@@ -1,0 +1,9 @@
+mutation deleteBook ($title: String!) {
+  deleteBook (
+  	input: {
+  		title: $title
+		}
+  ) {
+    title
+  }
+}

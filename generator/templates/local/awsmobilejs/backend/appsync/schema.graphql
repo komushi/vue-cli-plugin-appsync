@@ -1,0 +1,43 @@
+type Book {
+    title: String!
+    gender: Gender
+    author: String
+}
+
+input CreateBookInput {
+    title: String!
+    gender: Gender
+    author: String
+}
+
+input DeleteBookInput
+{
+    title: String!
+}
+
+enum Gender {
+    Male
+    Female
+}
+
+type Mutation {
+    createBook(input: CreateBookInput!): Book
+    deleteBook(input: DeleteBookInput!): Book
+}
+
+type Query {
+    me: String
+}
+
+type Subscription {
+    onCreateBook(title: String, author: String): Book
+        @aws_subscribe(mutations: ["createBook"])
+    onDeleteBook(title: String, author: String): Book
+        @aws_subscribe(mutations: ["deleteBook"])
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+    subscription: Subscription
+}

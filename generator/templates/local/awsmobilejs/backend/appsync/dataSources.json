@@ -1,0 +1,11 @@
+{
+    "dataSources": [
+        {
+            "name": "BookSource",
+            "description": null,
+            "type": "NONE",
+            "serviceRoleArn": "{managed-by-awsmobile-cli}"
+        }
+    ],
+    "tables": []
+}

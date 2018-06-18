@@ -136,9 +136,15 @@ module.exports = (api, options, rootOptions) => {
 
   api.extendPackage(pkg)
 
-  api.render('./templates/default', {
-    ...options,
-  })
+  if (options.datasourceType === 'NONE') {
+    api.render('./templates/local', {
+      ...options,
+    })    
+  } else {
+    api.render('./templates/default', {
+      ...options,
+    }) 
+  }
 
   api.onCreateComplete(() => {
     // Modify main.js
@@ -258,29 +264,31 @@ module.exports = (api, options, rootOptions) => {
     }
 
     // Modify dataSources.json
-    getRegion()
-      .then((awsRegion) => {
-        try {
-          const dsPath = api.resolve('./awsmobilejs/backend/appsync/dataSources.json')
+    if (options.datasourceType !== 'NONE') {
+      getRegion()
+        .then((awsRegion) => {
+          try {
+            const dsPath = api.resolve('./awsmobilejs/backend/appsync/dataSources.json')
 
-          let dsContent = fs.readFileSync(dsPath, { encoding: 'utf8' })
+            let dsContent = fs.readFileSync(dsPath, { encoding: 'utf8' })
 
-          const dsLines = dsContent.split(/\r?\n/g).reverse()
+            const dsLines = dsContent.split(/\r?\n/g).reverse()
 
-          // Replace awsRegion
-          const awsRegionIndex = dsLines.findIndex(line => line.match(/"awsRegion"/))
-          dsLines[awsRegionIndex] = `\t\t\t\t"awsRegion": "` + awsRegion + `",`
+            // Replace awsRegion
+            const awsRegionIndex = dsLines.findIndex(line => line.match(/"awsRegion"/))
+            dsLines[awsRegionIndex] = `\t\t\t\t"awsRegion": "` + awsRegion + `",`
 
-          // Replace Region
-          const regionIndex = dsLines.findIndex(line => line.match(/"Region"/))
-          dsLines[regionIndex] = `\t\t\t"Region": "` + awsRegion + `"`
+            // Replace Region
+            const regionIndex = dsLines.findIndex(line => line.match(/"Region"/))
+            dsLines[regionIndex] = `\t\t\t"Region": "` + awsRegion + `"`
 
-          dsContent = dsLines.reverse().join('\n')
-          fs.writeFileSync(dsPath, dsContent, { encoding: 'utf8' })
-        } catch (e) {
-          api.exitLog(`Your dataSources.json couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
-        }
-      })
+            dsContent = dsLines.reverse().join('\n')
+            fs.writeFileSync(dsPath, dsContent, { encoding: 'utf8' })
+          } catch (e) {
+            api.exitLog(`Your dataSources.json couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
+          }
+        })      
+    }
 
     // Linting
     try {

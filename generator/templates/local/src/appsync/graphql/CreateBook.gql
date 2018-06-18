@@ -1,0 +1,11 @@
+mutation createBook ($title: String!, $gender: Gender!, $author: String) {
+  createBook (
+  	input: {
+  		title: $title, gender: $gender, author: $author
+		}
+  ) {
+    title
+    gender
+    author
+  }
+}

@@ -1,0 +1,5 @@
+subscription onDeleteBook {
+  onDeleteBook {
+    title
+  }
+}
