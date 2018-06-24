@@ -84,13 +84,29 @@ const writeGraphqlApi = (api, authenticationType, backendInfo) => {
       resolve()
     } catch (e) {
       reject(e)
+
+      const errPath = api.resolve('./writeGraphqlApi_err.log')
+
+      fs.writeFileSync(errPath, e, { encoding: 'utf8' })
     }
   })
 }
 
 const updateBackend = () => {
   return new Promise((resolve, reject) => {
-    cmd.run('awsmobile push', (err, data, stderr) => {
+    cmd.get('awsmobile push > updateBackend.output', (err, data, stderr) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
+    })
+  })
+}
+
+const publishProduction = () => {
+  return new Promise((resolve, reject) => {
+    cmd.get('awsmobile publish > publishProduction.output', (err, data, stderr) => {
       if (err) {
         reject(err)
       } else {
@@ -101,8 +117,8 @@ const updateBackend = () => {
 }
 
 module.exports = (api, options, rootOptions) => {
+  // package.json dependencies adjustment
   let pkg
-
   if (options.authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
     pkg = {
       dependencies: {
@@ -133,13 +149,19 @@ module.exports = (api, options, rootOptions) => {
       },
     }
   }
-
   api.extendPackage(pkg)
 
-  if (options.datasourceType === 'NONE') {
-    api.render('./templates/local', {
-      ...options,
-    })
+  // Render different templates
+  if (options.addExample) {
+    if (options.datasourceType === 'NONE') {
+      api.render('./templates/local', {
+        ...options,
+      })
+    } else if (options.datasourceType === 'AMAZON_DYNAMODB') {
+      api.render('./templates/dynamodb', {
+        ...options,
+      })
+    }
   } else {
     api.render('./templates/default', {
       ...options,
@@ -148,31 +170,33 @@ module.exports = (api, options, rootOptions) => {
 
   api.onCreateComplete(() => {
     // Modify main.js
-    try {
-      const tsPath = api.resolve('./src/main.ts')
-      const jsPath = api.resolve('./src/main.js')
+    if (options.addExample) {
+      try {
+        const tsPath = api.resolve('./src/main.ts')
+        const jsPath = api.resolve('./src/main.js')
 
-      const mainPath = fs.existsSync(tsPath) ? tsPath : jsPath
-      let content = fs.readFileSync(mainPath, { encoding: 'utf8' })
+        const mainPath = fs.existsSync(tsPath) ? tsPath : jsPath
+        let content = fs.readFileSync(mainPath, { encoding: 'utf8' })
 
-      const lines = content.split(/\r?\n/g).reverse()
+        const lines = content.split(/\r?\n/g).reverse()
 
-      // Inject import
-      if (lines.findIndex(line => line.match(/import { AppSyncProvider }/)) === -1) {
-        const lastImportIndex = lines.findIndex(line => line.match(/^import/))
-        lines[lastImportIndex] += `\nimport { AppSyncProvider } from '@/appsync'`
+        // Inject import
+        if (lines.findIndex(line => line.match(/import { AppSyncProvider }/)) === -1) {
+          const lastImportIndex = lines.findIndex(line => line.match(/^import/))
+          lines[lastImportIndex] += `\nimport { AppSyncProvider } from '@/appsync'`
+        }
+
+        // Modify app
+        if (lines.findIndex(line => line.match(/AppSyncProvider.provide()/)) === -1) {
+          const appIndex = lines.findIndex(line => line.match(/new Vue/))
+          lines[appIndex] += `\n  provide: AppSyncProvider.provide(),`
+        }
+
+        content = lines.reverse().join('\n')
+        fs.writeFileSync(mainPath, content, { encoding: 'utf8' })
+      } catch (e) {
+        api.exitLog(`Your main.js couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
       }
-
-      // Modify app
-      if (lines.findIndex(line => line.match(/AppSyncProvider.provide()/)) === -1) {
-        const appIndex = lines.findIndex(line => line.match(/new Vue/))
-        lines[appIndex] += `\n  provide: AppSyncProvider.provide(),`
-      }
-
-      content = lines.reverse().join('\n')
-      fs.writeFileSync(mainPath, content, { encoding: 'utf8' })
-    } catch (e) {
-      api.exitLog(`Your main.js couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
     }
 
     // Modify App.vue
@@ -264,31 +288,53 @@ module.exports = (api, options, rootOptions) => {
     }
 
     // Modify dataSources.json
-    if (options.datasourceType !== 'NONE') {
-      getRegion()
-        .then((awsRegion) => {
-          try {
-            const dsPath = api.resolve('./awsmobilejs/backend/appsync/dataSources.json')
+    if (options.addExample) {
+      if (options.datasourceType !== 'NONE') {
+        getRegion()
+          .then((awsRegion) => {
+            try {
+              const dsPath = api.resolve('./awsmobilejs/backend/appsync/dataSources.json')
 
-            let dsContent = fs.readFileSync(dsPath, { encoding: 'utf8' })
+              let dsContent = fs.readFileSync(dsPath, { encoding: 'utf8' })
 
-            const dsLines = dsContent.split(/\r?\n/g).reverse()
+              const dsLines = dsContent.split(/\r?\n/g).reverse()
 
-            // Replace awsRegion
-            const awsRegionIndex = dsLines.findIndex(line => line.match(/"awsRegion"/))
-            dsLines[awsRegionIndex] = `\t\t\t\t"awsRegion": "` + awsRegion + `",`
+              // Replace awsRegion
+              const awsRegionIndex = dsLines.findIndex(line => line.match(/"awsRegion"/))
+              dsLines[awsRegionIndex] = `\t\t\t\t"awsRegion": "` + awsRegion + `",`
 
-            // Replace Region
-            const regionIndex = dsLines.findIndex(line => line.match(/"Region"/))
-            dsLines[regionIndex] = `\t\t\t"Region": "` + awsRegion + `"`
+              // Replace Region
+              const regionIndex = dsLines.findIndex(line => line.match(/"Region"/))
+              dsLines[regionIndex] = `\t\t\t"Region": "` + awsRegion + `"`
 
-            dsContent = dsLines.reverse().join('\n')
-            fs.writeFileSync(dsPath, dsContent, { encoding: 'utf8' })
-          } catch (e) {
-            api.exitLog(`Your dataSources.json couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
-          }
-        })
+              dsContent = dsLines.reverse().join('\n')
+              fs.writeFileSync(dsPath, dsContent, { encoding: 'utf8' })
+            } catch (e) {
+              api.exitLog(`Your dataSources.json couldn't be modified. You will have to edit the code yourself: https://github.com/komushi/vue-cli-plugin-appsync`, 'warn')
+            }
+          })
+      }
     }
+
+    // Modify mobile-hub-project.yml
+    const projectFilePath = api.resolve('./awsmobilejs/backend/mobile-hub-project.yml')
+    const signinTemplatePath = api.resolve('./awsmobilejs/backend/templates/user-signin.yml')
+    const noSigninTemplatePath = api.resolve('./awsmobilejs/backend/templates/no-user-signin.yml')
+
+    let filePath
+
+    if (options.authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
+      filePath = signinTemplatePath
+    } else {
+      filePath = noSigninTemplatePath
+    }
+
+    fs.copyFileSync(filePath, projectFilePath)
+
+    fs.unlinkSync(signinTemplatePath)
+    fs.unlinkSync(noSigninTemplatePath)
+
+    fs.rmdirSync(api.resolve('./awsmobilejs/backend/templates/'))
 
     // Linting
     try {
@@ -301,22 +347,45 @@ module.exports = (api, options, rootOptions) => {
     // Create Backends
     if (options.deployBackend) {
       api.exitLog(`Deploying Backend...`, 'info')
-      api.exitLog(`Please run ${chalk.blue('awsmobile run')} or ${chalk.blue('npm run serve')} to start the vue application.`, 'info')
 
-      if (options.authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
-        deployBackend()
-          .then(() => {
-            return getBackendInfo(api)
-          })
-          .then(backendInfo => {
-            return writeGraphqlApi(api, options.authenticationType, backendInfo)
-          })
-          .then(updateBackend)
+      if (options.publishProduction) {
+        api.exitLog(`The production distribution is being published to S3 and CloudFront...`, 'info')
+
+        if (options.authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
+          deployBackend()
+            .then(() => {
+              return getBackendInfo(api)
+            })
+            .then(backendInfo => {
+              return writeGraphqlApi(api, options.authenticationType, backendInfo)
+            })
+            .then(updateBackend)
+            .then(publishProduction)
+        } else {
+          deployBackend()
+            .then(publishProduction)
+        }
       } else {
-        deployBackend()
+        api.exitLog(`Run ${chalk.blue('awsmobile run')} or ${chalk.blue('npm run serve')} to run local test.`, 'info')
+        api.exitLog(`Or run ${chalk.blue('awsmobile publish')} to build for production and publish to S3 and CloudFront.`, 'info')
+
+        if (options.authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
+          deployBackend()
+            .then(() => {
+              return getBackendInfo(api)
+            })
+            .then(backendInfo => {
+              return writeGraphqlApi(api, options.authenticationType, backendInfo)
+            })
+            .then(updateBackend)
+        } else {
+          deployBackend()
+        }
       }
     } else {
-      api.exitLog(`Please run ${chalk.blue('awsmobile init --yes')} to deploy the backend.`, 'info')
+      api.exitLog(`Please first run ${chalk.blue('awsmobile init --yes')} to deploy the backend.`, 'info')
+      api.exitLog(`Run ${chalk.blue('awsmobile run')} or ${chalk.blue('npm run serve')} to run local test.`, 'info')
+      api.exitLog(`Or run ${chalk.blue('awsmobile publish')} to build for production and publish to S3 and CloudFront.`, 'info')
     }
   })
 }

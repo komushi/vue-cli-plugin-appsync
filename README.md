@@ -55,6 +55,8 @@ Vue CLI v3.0.0-beta.15
 
 ### 1-5. Apply the AppSync plugin
 Navigate to the newly created project folder and add the cli plugin:
+**With the options below a backend with AppSync + Cognito and a frontend website on S3 and CloudFront will be deployed.**
+**Your default browser will be started to the hosted website.**
 
 ```
 cd my-new-app
@@ -64,10 +66,11 @@ vue add appsync
 ? What is the datasource type? AMAZON_DYNAMODB
 ? What is the authentication type? AMAZON_COGNITO_USER_POOLS
 ? Deploy the AWS AppSync and AWS Mobile Hub Backends? Yes
+? Publish the production distribution to AWS S3 and CloudFront? Yes
 ```
 
 ### 1-6. Setup AWS AppSync API 
-**Skip this step if you already chose yes for 'Deploy the AWS AppSync and AWS Mobile Hub Backends'**
+**Skip this step if you already chose yes for 'Deploy the AWS AppSync and AWS Mobile Hub Backends?'**
 
 **:information_source: An example `AppSyncExample.vue` component alongside some GraphQL query and setting files will be added into your sources. To make the example work you need to setup one AWS AppSync API as the GraphQL server-side API.**
 
@@ -79,6 +82,7 @@ awsmobile init --yes
 ```
 
 ### 1-7. Start your app
+**Skip this step if you already chose yes for 'Publish the production distribution to AWS S3 and CloudFront?'**
 
 ```
 npm run serve

@@ -9,7 +9,7 @@ module.exports = [
     type: 'list',
     name: 'datasourceType',
     message: 'What is the datasource type?',
-    choices: ['AMAZON_DYNAMODB', 'NONE'],
+    choices: ['NONE', 'AMAZON_DYNAMODB'],
     // choices: ['NONE', 'AMAZON_DYNAMODB' 'AMAZON_ELASTICSEARCH', 'AWS_LAMBDA'],
     when: answers => answers.addExample,
   },
@@ -24,5 +24,12 @@ module.exports = [
     name: 'deployBackend',
     message: 'Deploy the AWS AppSync and AWS Mobile Hub Backends?',
     default: true,
+  },
+  {
+    type: 'confirm',
+    name: 'publishProduction',
+    message: 'Publish the production distribution to AWS S3 and CloudFront?',
+    default: true,
+    when: answers => answers.deployBackend,
   },
 ]
